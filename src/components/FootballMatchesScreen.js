@@ -2,8 +2,10 @@ import React, { useState, useEffect } from 'react';
 import './FootballMatchesScreen.css';
 import { FaFutbol, FaCheckCircle, FaCircle } from 'react-icons/fa';
 import axios from 'axios';
+import TelegramEmulator from '../TelegramEmulator'; // Импорт эмулятора
 
 const GRADIENT_COLORS = ['rgb(175, 83, 255)', 'rgb(110, 172, 254)'];
+const Telegram = window.Telegram || TelegramEmulator; // Проверка среды выполнения
 
 const sheetId = '1R2k3qsM2ggajeBu8IrP1d-LAolneeqcTrDNV_JHqtzc';
 const apiKey = 'AIzaSyDrCLUPUlzlNoj4KJlFAnP2KZrt8MXZbUE';
@@ -28,12 +30,10 @@ const getDaysOfWeek = () => {
   return days;
 };
 
-// Компонента для отображения логотипа команды без лоадера
 const TeamLogo = ({ uri }) => {
   if (!uri) {
     return <div className="team-logo-placeholder" />;
   }
-
   return (
     <div className="team-logo-container">
       <img src={uri} alt="Team Logo" className="team-logo" />
@@ -98,7 +98,7 @@ const FootballMatchesScreen = () => {
         if (!leaguesMap[match.league]) {
           leaguesMap[match.league] = {
             league: match.league,
-            leagueIcon: 'futbol', // Используем иконку из react-icons
+            leagueIcon: 'futbol',
             data: [],
           };
         }
@@ -119,6 +119,13 @@ const FootballMatchesScreen = () => {
 
   useEffect(() => {
     fetchData();
+    if (Telegram) {
+      Telegram.MainButton.show();
+      Telegram.MainButton.setText('Готово');
+      Telegram.MainButton.onClick(() => {
+        console.log('Main button clicked');
+      });
+    }
   }, []);
 
   useEffect(() => {
